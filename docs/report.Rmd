@@ -4,6 +4,7 @@ author: "Benjamin Garcia de Figueiredo"
 date: "2022-08-21"
 output: pdf_document
 bibliography: ./references.bib
+csl: ./capitalism-nature-socialism.csl
 ---
 
 ```{r setup, include=FALSE}
@@ -24,13 +25,13 @@ We can start by considering the differential equation
 
 $$
 \begin{aligned}
-  \dot \boldsymbol{x} &= -\frac{1}{\tau}(\boldsymbol x - \boldsymbol \lambda) + \sqrt{g}\xi(t), \\
+  d\boldsymbol{x}/dt &= -\frac{1}{\tau}(\boldsymbol x - \boldsymbol \lambda) + \sqrt{g}\xi(t), \\
   \langle \xi(t) \rangle &= 0, \\
   \langle \xi(t)\xi(t')\rangle &= \delta(x-x').
 \end{aligned}
 $$
 
-The equation above describes the position $\boldsymbol x \in \mathbb R^2$ of an object that is attracted to a point $\boldsymbol \lambda \in \mathbb R^2$ with a characteristic return rate $\tau$. At the same time, this it is subject to some stochastic white noise $\xi(t)$, which can be thought of as a continuous family of independent, identically distributed standard normal variables. Integrating the above equation in the interval $[t, t+\Delta t]$ reveals that (CITE TORAL)
+The equation above describes the position $\boldsymbol x \in \mathbb R^2$ of an object that is attracted to a point $\boldsymbol \lambda \in \mathbb R^2$ with a characteristic return rate $\tau$. At the same time, this it is subject to some stochastic white noise $\xi(t)$, which can be thought of as a continuous family of independent, identically distributed standard normal variables. Integrating the above equation in the interval $[t, t+\Delta t]$ reveals that 
 
 $$
   \boldsymbol x(t + \Delta t) = \boldsymbol x(t)\exp(-\Delta t/\tau) + (1- \exp(-\Delta t/\tau))\boldsymbol \lambda + \sqrt{\frac{g\tau}{2}(1 - \exp(-2\Delta t/\tau))} \boldsymbol u
@@ -58,7 +59,7 @@ $$
 
 It is typical to choose $M = 2^{64}$, so that the modulo operation is done at "zero cost" by integer overflow (assuming a 64-bit architecture). The choice of $a$ and $c$ should be optimized as well to ensure the sequence is fairly aperiodic (as this sequence necessarily has a period of at most $M$). The values $a = 2862933555777941757$, $c = 3037000493$ are used throughout, to produce a fairly uniform distribution (Figure \ref{fig:lcghist})
 
-```{julia lcghist, fig.cap="\\label{fig:figs}plotting example"}
+```{julia lcghist, fig.cap="\\label{fig:lcghist} Distribution of 100000 samples from our Linear Congruential Generator"}
 rng = LCG(1000)
 histogram(PRNG.rand(rng, 100000))
 ```
@@ -71,13 +72,13 @@ $$
  U_2 &= \Theta/2\pi
 \end{aligned}
 $$
-are i.i.d $U[0,1]$ variables. With a means to generate normal random variables, the generation of trajectories is very simple, as one simply iterates the equation for the OU process integrated over a finite interval.
+are i.i.d $U[0,1]$ variables. With a means to generate normal random variables, the generation of trajectories is very simple, as one simply iterates the equation for the OU process integrated over a finite interval. 
 
 ## First Encounter Statistics
 
-Heading on to the study of interactions through spatial movement, we look into the following process: We consider two identical independent OU processes and initialize them randomly according to their stationary distributions (which as one can see above, is $\mathcal N(\boldsymbol\lambda, g\tau/2)$). We allow these processes to evolve in time until they enter each other's "interaction range", defined as a distance $\epsilon$ from one another. At this moment, one terminates the process and records the position and time of the event.
+Heading on to the study of interactions through spatial movement, we look into the following process: Consider two identical independent OU processes and initialize them randomly according to their stationary distributions (which as one can see above, is $\mathcal N(\boldsymbol\lambda, g\tau/2)$). By measuring space and time in the natural scales of the process, we can impose $\tau = g\tau = 1$ without loss of generality. We allow these processes to evolve in time until they enter each other's "interaction range", defined as a distance $\epsilon$ from one another. At this moment, one terminates the process and records the position and time of the event. Looking at the distribution of encounter times, we find a characteristic decay (Figure \ref{fig:encounters})
 
-```{julia encountertimehist, fig.cap="\\label{fig:encountertimehist}plotting example"}
-rng = LCG(1000)
-histogram(PRNG.rand(rng, 100000))
-```
+![Histogram of first-encounter times \label{fig:encounters}](../figs/first_encounters.png)
+
+
+## References

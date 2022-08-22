@@ -29,12 +29,16 @@ mutable struct Brownian2D <: StochasticProcess
 end
 
 function updateSP(rng::LCG, X::StochasticProcess, h::Float64)::Nothing
+    # Evolves a stochastic process forward a time-step
+    # rng : LCG random number generator
+    # X : stochastic process to evolve
+    # h : time step
 
-    if typeof(X) == IsoOU2D
+    if typeof(X) == IsoOU2D # Ornstein-Uhlenbeck case
         u = rand2vecn(rng)
 
         X.x = (exp(-h/X.τ) .* X.x) .+ ((1-exp(-h/X.τ)) .* X.λ) .+ (√(X.g*X.τ/2 * (1 - exp(-2h/X.τ))) .* u)
-    elseif typeof(X) == Brownian2D
+    elseif typeof(X) == Brownian2D # Brownian motion case
         u = rand2vecn(rng)
 
         X.x = X.x .+ (√(X.g*h) .* u)
@@ -43,14 +47,24 @@ function updateSP(rng::LCG, X::StochasticProcess, h::Float64)::Nothing
     nothing
 end
 
-function trajectorySP(rng::LCG, X::StochasticProcess, h::Float64, maxT::Float64)::Vector{Tuple{Float64,Float64,Float64}}
-    N = floor(Int, maxT/h)
-    out = Array{Tuple{Float64,Float64,Float64}}(undef, N)
-    for i in 0:N
-        out[i] = (i*h, X.x[1],X.x[2])
-        updateSP(rng, X, h)
+function trajectorySP(rng::LCG, X::StochasticProcess, h::Float64, maxT::Float64)::Tuple{Vector{Float64},Vector{Float64},Vector{Float64}}
+    # Generates a trajectory of an stochastic process
+    # rng : LCG random number generator
+    # X : stochastic process to evolve
+    # h : time step size
+    # maxT : total time
+    # output : A triplet of arrays ([x1,...],[y1,..],[t1,...]) representing the trajetory in time
+    N = floor(Int, maxT/h) # number of time steps
+    outX = Array{Float64}(undef, N) # initialize output arrays
+    outY = Array{Float64}(undef, N)
+    outT = Array{Float64}(undef, N) 
+    for i in 1:N
+        outT[i] = (i-1)*h
+        outX[i] = X.x[1]
+        outY[i] = X.x[2] # record time and position
+        updateSP(rng, X, h) # evolve the process by a time step
     end
 
-    out
+    (outX, outY, outT)
 end
 end

@@ -1,3 +1,7 @@
+# Final project for the 2022 QBio Computational Methods course
+# ---------------------------------
+# In this script, we generate encounter statistics between two stationary OU processes
+
 include("SDE.jl")
 using .SDE
 
